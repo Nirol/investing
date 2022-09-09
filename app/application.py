@@ -31,7 +31,8 @@ def register_extensions(app):
 
 def register_blueprints(app):
     """Register Flask blueprints."""
-
+    from app.ad_unit.views import ad_units_bp
+    app.register_blueprint(ad_units_bp)
     return None
 
 
