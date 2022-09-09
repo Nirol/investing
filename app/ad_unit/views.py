@@ -48,13 +48,43 @@ def create_ad_unit():
 
 
 @ad_units_bp.route('/ad_unit/<int:ad_unit_id>', methods=['PATCH'])
-def update_ad_unit(ad_unit_id):
+def patch_ad_unit(ad_unit_id):
     if not request.json:
         abort(400)
 
 
     if not AdUnitSchema.is_patch_fields_valid(request.json):
         abort(400,f"Only the fields {AdUnitSchema.UPDATABLE_FIELDS} are updatable")
+
+    ad_unit = AdUnit.query.get_or_404(ad_unit_id)
+
+    for key, value in request.json.items():
+        setattr(ad_unit, key, value)
+
+    # validate patched ad unit value:
+    try:
+        AdUnitSchema().load(ad_unit.updatable_fields_json())
+    except ValidationError as error:
+        abort(400,error.messages)
+
+    # update the updated_at field:
+    ad_unit.updated_at = datetime.utcnow()
+
+    db.session.commit()
+    return AdUnitSchema().dump(ad_unit)
+
+@ad_units_bp.route('/ad_unit/<int:ad_unit_id>', methods=['PUT'])
+def put_ad_unit(ad_unit_id):
+    if not request.json:
+        abort(400)
+
+
+    try:
+        # as in POST request, the payload need to hold all required ad unit arguments.
+        AdUnitSchema().load(request.json)
+    except ValidationError as error:
+        abort(400,error.messages)
+
 
     ad_unit = AdUnit.query.get_or_404(ad_unit_id)
 
