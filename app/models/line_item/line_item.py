@@ -9,6 +9,7 @@ from app.extensions import db
 
 # many to many relationship table between line item and ad unit
 from app.models.ad_unit.ad_unit import AdUnit, AdUnitSchema
+from app.models.base_schema import BaseSchema
 
 ad_unit_line_item = db.Table('ad_unit_line_item',
                     db.Column('line_item_id', db.Integer, db.ForeignKey('line_item.id'), primary_key=True),
@@ -37,8 +38,8 @@ class LineItem(db.Model):
         # do custom initialization here
 
 
-class LineItemSchema(SQLAlchemyAutoSchema):
-    UPDATABLE_FIELDS = ["max_impressions", "rpm", "campaign_start", "campaign_end", "ad_units"]
+class LineItemSchema(BaseSchema, SQLAlchemyAutoSchema):
+    LINE_ITEM_UPDATABLE_FIELDS = ["max_impressions", "rpm", "campaign_start", "campaign_end", "ad_units"]
 
     @post_load()
     def add_ad_units(self, data, **kwargs):
@@ -60,9 +61,6 @@ class LineItemSchema(SQLAlchemyAutoSchema):
         return data
 
 
-    created_at = fields.DateTime(dump_only=True)
-    updated_at = fields.DateTime(dump_only=True)
-    id = fields.Integer(dump_only=True)
     ad_unit_ids = fields.List(fields.Integer(), load_only=True)
     ad_units = fields.List(fields.Nested(AdUnitSchema()), dump_only=True)
 
