@@ -1,14 +1,14 @@
 from sqlalchemy import UniqueConstraint
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
-from app.models.ad_unit.enums import Device,Browser, Language, OperatingSystem
+from app.models.ad_unit.enums import Device, Browser, Language, OperatingSystem
 from app.extensions import db
 from app.models.base_model import BaseModel
 from app.models.base_schema import BaseSchema
 
 
 class AdUnit(BaseModel):
-    __tablename__ = 'ad_unit'
+    __tablename__ = "ad_unit"
 
     # the five fields defining a unique ad unit:
 
@@ -20,15 +20,14 @@ class AdUnit(BaseModel):
     os = db.Column(db.Enum(OperatingSystem), nullable=False)
 
     # add the unique constraint
-    __table_args__ = (UniqueConstraint('country', 'device','browser','language','os',name='_ad_unit_uc'),
-                      )
+    __table_args__ = (UniqueConstraint("country", "device", "browser", "language", "os", name="_ad_unit_uc"),)
 
     def __init__(self, **kwargs):
         # do custom initialization here
-        super(AdUnit, self).__init__( **kwargs)
+        super(AdUnit, self).__init__(**kwargs)
 
 
-class AdUnitSchema(BaseSchema, SQLAlchemyAutoSchema ):
+class AdUnitSchema(BaseSchema, SQLAlchemyAutoSchema):
     AD_UNIT_UPDATABLE_FIELDS = ["country", "device", "browser", "language", "os"]
 
     class Meta:

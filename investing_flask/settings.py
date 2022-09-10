@@ -11,15 +11,11 @@ from environs import Env
 env = Env()
 env.read_env()
 
-database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
-    dbuser= env.str('DBUSER'),
-    dbpass= env.str('DBPASS'),
-    dbhost= env.str('DBHOST'),
-    dbname= env.str('DBNAME')
+database_uri = "postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
+    dbuser=env.str("DBUSER"), dbpass=env.str("DBPASS"), dbhost=env.str("DBHOST"), dbname=env.str("DBNAME")
 )
 
 ENV = env.str("FLASK_ENV", default="production")
 DEBUG = ENV == "development"
 SQLALCHEMY_DATABASE_URI = database_uri
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-

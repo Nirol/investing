@@ -8,11 +8,12 @@ from sqlalchemy.exc import IntegrityError, ProgrammingError
 from app.extensions import db
 from app.models import Creative, CreativeSchema
 
-creative_bp = Blueprint('creative', __name__)
+creative_bp = Blueprint("creative", __name__)
+
 
 @creative_bp.route("/creative/list", methods=["GET"])
 def get_creatives():
-    creative_schema  = CreativeSchema(many=True)
+    creative_schema = CreativeSchema(many=True)
     creatives = Creative.query.all()
     return creative_schema.dump(creatives)
 
@@ -31,23 +32,21 @@ def delete_creative(creative_id):
         db.session.commit()
     except IntegrityError as error:
         abort(400, error)
-    return jsonify({'result': True})
+    return jsonify({"result": True})
 
 
-@creative_bp.route('/creative', methods=['POST'])
+@creative_bp.route("/creative", methods=["POST"])
 def create_creative():
     creative_schema = CreativeSchema()
     if not request.json:
-        abort(400,"no request body")
+        abort(400, "no request body")
 
     try:
-        creative_dict= creative_schema.load(request.json)
+        creative_dict = creative_schema.load(request.json)
     except ValidationError as error:
-        abort(400,error.messages)
+        abort(400, error.messages)
 
-    creative = Creative(
-        **creative_dict
-    )
+    creative = Creative(**creative_dict)
     db.session.add(creative)
     try:
         db.session.commit()
@@ -55,14 +54,17 @@ def create_creative():
         abort(400, error)
     return creative_schema.dump(creative), 201
 
-@creative_bp.route('/creative/<int:creative_id>', methods=['PATCH'])
+
+@creative_bp.route("/creative/<int:creative_id>", methods=["PATCH"])
 def patch_creative(creative_id):
     if not request.json:
         abort(400)
     creative_schema = CreativeSchema()
 
-    if not CreativeSchema.is_patch_fields_valid(data=request.json, updateable_fields=CreativeSchema.CREATIVE_UPDATABLE_FIELDS):
-        abort(400,f"Only the fields {CreativeSchema.CREATIVE_UPDATABLE_FIELDS} are updatable")
+    if not CreativeSchema.is_patch_fields_valid(
+        data=request.json, updateable_fields=CreativeSchema.CREATIVE_UPDATABLE_FIELDS
+    ):
+        abort(400, f"Only the fields {CreativeSchema.CREATIVE_UPDATABLE_FIELDS} are updatable")
 
     creative = Creative.query.get_or_404(creative_id)
 
@@ -73,8 +75,7 @@ def patch_creative(creative_id):
     try:
         creative_schema.load(creative.updatable_fields_json(updatable_fields=CreativeSchema.CREATIVE_UPDATABLE_FIELDS))
     except ValidationError as error:
-        abort(400,error.messages)
-
+        abort(400, error.messages)
 
     # update the updated_at field:
     creative.updated_at = datetime.utcnow()
@@ -86,9 +87,7 @@ def patch_creative(creative_id):
     return creative_schema.dump(creative)
 
 
-
-
-@creative_bp.route('/creative/<int:creative_id>', methods=['PUT'])
+@creative_bp.route("/creative/<int:creative_id>", methods=["PUT"])
 def put_creative(creative_id):
     if not request.json:
         abort(400)
@@ -98,8 +97,7 @@ def put_creative(creative_id):
         # as in POST request, the payload need to hold all required line item arguments.
         creative_schema.load(request.json)
     except ValidationError as error:
-        abort(400,error.messages)
-
+        abort(400, error.messages)
 
     creative = Creative.query.get_or_404(creative_id)
 
@@ -110,8 +108,7 @@ def put_creative(creative_id):
     try:
         creative_schema.load(creative.updatable_fields_json(updatable_fields=CreativeSchema.CREATIVE_UPDATABLE_FIELDS))
     except ValidationError as error:
-        abort(400,error.messages)
-
+        abort(400, error.messages)
 
     # update the updated_at field:
     creative.updated_at = datetime.utcnow()

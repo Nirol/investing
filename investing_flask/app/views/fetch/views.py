@@ -6,7 +6,8 @@ from app.extensions import db
 from app.models import LineItem, LineItemSchema, AdUnit
 from flask import request
 
-fetch_bp = Blueprint('fetch', __name__)
+fetch_bp = Blueprint("fetch", __name__)
+
 
 @fetch_bp.route("/fetch/line_items", methods=["GET"])
 def fetch_line_items():
@@ -15,17 +16,15 @@ def fetch_line_items():
     # TODO: add validation for request arguments values
     if len(request.args) > 0:
         # dynamically create filters:
-        for key,value in request.args.items():
+        for key, value in request.args.items():
             if key not in FILTER_BY_FIELDS:
-                abort(400,f"{key} is invalid search argument")
+                abort(400, f"{key} is invalid search argument")
 
-            filters.append((key,value))
+            filters.append((key, value))
         # conversion to tuple is required to use dynamically created filters
         filters = tuple(filters)
 
-
-    query = db.session.query(LineItem).join(AdUnit,LineItem.ad_units )
-
+    query = db.session.query(LineItem).join(AdUnit, LineItem.ad_units)
 
     for _filter, value in filters:
         query = query.filter(getattr(AdUnit, _filter) == value)
@@ -33,7 +32,3 @@ def fetch_line_items():
     line_items = query.all()
     line_item_schema = LineItemSchema(many=True)
     return line_item_schema.dump(line_items)
-
-
-
-

@@ -4,7 +4,6 @@ import sys
 from flask import Flask
 
 
-
 # import all models so flask db migration will recognize the models.
 from app.extensions import db
 
@@ -33,19 +32,22 @@ def register_extensions(app):
 def register_blueprints(app):
     """Register Flask blueprints."""
     from app.views import ad_units_bp
+
     app.register_blueprint(ad_units_bp)
 
     from app.views import line_item_bp
+
     app.register_blueprint(line_item_bp)
 
     from app.views import creative_bp
+
     app.register_blueprint(creative_bp)
 
     from app.views import fetch_bp
+
     app.register_blueprint(fetch_bp)
 
     return None
-
 
 
 def configure_logger(app):

@@ -8,11 +8,12 @@ from sqlalchemy.exc import IntegrityError
 from app.extensions import db
 from app.models import AdUnit, AdUnitSchema
 
-ad_units_bp = Blueprint('ad_units', __name__)
+ad_units_bp = Blueprint("ad_units", __name__)
+
 
 @ad_units_bp.route("/ad_unit/list", methods=["GET"])
 def get_ad_units():
-    schema  = AdUnitSchema(many=True)
+    schema = AdUnitSchema(many=True)
     ad_units = AdUnit.query.all()
     return schema.dump(ad_units)
 
@@ -28,41 +29,39 @@ def delete_ad_unit(ad_unit_id):
     ad_unit = AdUnit.query.get_or_404(ad_unit_id)
     db.session.delete(ad_unit)
     db.session.commit()
-    return jsonify({'result': True})
+    return jsonify({"result": True})
 
 
-@ad_units_bp.route('/ad_unit', methods=['POST'])
+@ad_units_bp.route("/ad_unit", methods=["POST"])
 def create_ad_unit():
     if not request.json:
-        abort(400,"no request body")
+        abort(400, "no request body")
     ad_unit_schema = AdUnitSchema()
     try:
         ad_unit_dict = ad_unit_schema.load(request.json)
     except ValidationError as error:
-        abort(400,error.messages)
+        abort(400, error.messages)
 
-    ad_unit = AdUnit(
-        **ad_unit_dict
-    )
+    ad_unit = AdUnit(**ad_unit_dict)
     db.session.add(ad_unit)
     try:
         db.session.commit()
     except IntegrityError as error:
         abort(400, error)
 
-
-
     return ad_unit_schema.dump(ad_unit), 201
 
 
-@ad_units_bp.route('/ad_unit/<int:ad_unit_id>', methods=['PATCH'])
+@ad_units_bp.route("/ad_unit/<int:ad_unit_id>", methods=["PATCH"])
 def patch_ad_unit(ad_unit_id):
     if not request.json:
         abort(400)
     ad_unit_schema = AdUnitSchema()
 
-    if not AdUnitSchema.is_patch_fields_valid(data=request.json, updateable_fields=AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS):
-        abort(400,f"Only the fields {AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS} are updatable")
+    if not AdUnitSchema.is_patch_fields_valid(
+        data=request.json, updateable_fields=AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS
+    ):
+        abort(400, f"Only the fields {AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS} are updatable")
 
     ad_unit = AdUnit.query.get_or_404(ad_unit_id)
 
@@ -73,7 +72,7 @@ def patch_ad_unit(ad_unit_id):
     try:
         ad_unit_schema.load(ad_unit.updatable_fields_json(updatable_fields=AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS))
     except ValidationError as error:
-        abort(400,error.messages)
+        abort(400, error.messages)
 
     # update the updated_at field:
     ad_unit.updated_at = datetime.utcnow()
@@ -84,7 +83,8 @@ def patch_ad_unit(ad_unit_id):
         abort(400, error)
     return ad_unit_schema.dump(ad_unit)
 
-@ad_units_bp.route('/ad_unit/<int:ad_unit_id>', methods=['PUT'])
+
+@ad_units_bp.route("/ad_unit/<int:ad_unit_id>", methods=["PUT"])
 def put_ad_unit(ad_unit_id):
     if not request.json:
         abort(400)
@@ -94,8 +94,7 @@ def put_ad_unit(ad_unit_id):
         # as in POST request, the payload need to hold all required ad unit arguments.
         ad_unit_schema.load(request.json)
     except ValidationError as error:
-        abort(400,error.messages)
-
+        abort(400, error.messages)
 
     ad_unit = AdUnit.query.get_or_404(ad_unit_id)
 
@@ -106,7 +105,7 @@ def put_ad_unit(ad_unit_id):
     try:
         ad_unit_schema.load(ad_unit.updatable_fields_json(updatable_fields=AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS))
     except ValidationError as error:
-        abort(400,error.messages)
+        abort(400, error.messages)
 
     # update the updated_at field:
     ad_unit.updated_at = datetime.utcnow()
