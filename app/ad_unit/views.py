@@ -3,6 +3,8 @@ from flask import abort, jsonify, request
 from marshmallow import ValidationError
 from datetime import datetime
 
+from sqlalchemy.exc import IntegrityError
+
 from app.extensions import db
 from app.models.ad_unit.ad_unit import AdUnit, AdUnitSchema
 
@@ -59,8 +61,8 @@ def patch_ad_unit(ad_unit_id):
         abort(400)
     ad_unit_schema = AdUnitSchema()
 
-    if not AdUnitSchema.is_patch_fields_valid(request.json):
-        abort(400,f"Only the fields {AdUnitSchema.UPDATABLE_FIELDS} are updatable")
+    if not AdUnitSchema.is_patch_fields_valid(data=request.json, updateable_fields=AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS):
+        abort(400,f"Only the fields {AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS} are updatable")
 
     ad_unit = AdUnit.query.get_or_404(ad_unit_id)
 

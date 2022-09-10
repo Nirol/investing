@@ -2,11 +2,11 @@ from datetime import datetime
 from typing import Dict
 
 from sqlalchemy import UniqueConstraint
-from marshmallow import fields
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 from app.models.ad_unit.enums import Device,Browser, Language, OperatingSystem
 from app.extensions import db
+from app.models.base_schema import BaseSchema
 
 
 class AdUnit(db.Model):
@@ -35,7 +35,7 @@ class AdUnit(db.Model):
         """
         obj_dict = self.__dict__
         updatable_fields = {}
-        for field in AdUnitSchema.UPDATABLE_FIELDS:
+        for field in AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS:
             updatable_fields[field] = obj_dict[field]
 
         return updatable_fields
@@ -45,27 +45,8 @@ class AdUnit(db.Model):
         # do custom initialization here
 
 
-class AdUnitSchema(SQLAlchemyAutoSchema):
-    UPDATABLE_FIELDS = ["country", "device", "browser", "language", "os"]
-
-
-    @staticmethod
-    def is_patch_fields_valid(data:Dict) ->bool:
-        """
-
-        :param data: the request payload body.
-        :return: if the requestt payload contain only updatable AdUnit fields.
-        """
-        for key in data.keys():
-            if key  not in AdUnitSchema.UPDATABLE_FIELDS:
-                return False
-
-        return True
-
-
-    created_at = fields.DateTime(dump_only=True)
-    updated_at = fields.DateTime(dump_only=True)
-    id = fields.Integer(dump_only=True)
+class AdUnitSchema(BaseSchema, SQLAlchemyAutoSchema ):
+    AD_UNIT_UPDATABLE_FIELDS = ["country", "device", "browser", "language", "os"]
 
     class Meta:
         model = AdUnit
