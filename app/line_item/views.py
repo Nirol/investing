@@ -71,11 +71,15 @@ def patch_line_item(line_item_id):
     for key, value in request.json.items():
         setattr(line_item, key, value)
 
-    # validate patched line item value:
+    # validate patched line_item values:
     try:
-        line_item_schema.load(line_item.updatable_fields_json(updatable_fields=LineItemSchema.LINE_ITEM_UPDATABLE_FIELDS))
+        line_item_dict = line_item_schema.load(line_item.updatable_fields_json(updatable_fields=LineItemSchema.LINE_ITEM_UPDATABLE_FIELDS))
     except ValidationError as error:
         abort(400,error.messages)
+
+    if "ad_unit_ids" in request.json:
+        # if ad_unit_ids were updated, line_item_dict will hold the updated AdUnit objects
+        line_item.ad_units =  line_item_dict['ad_units']
 
     # update the updated_at field:
     line_item.updated_at = datetime.utcnow()

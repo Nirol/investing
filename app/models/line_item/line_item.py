@@ -35,7 +35,7 @@ class LineItem(BaseModel):
 
 
 class LineItemSchema(BaseSchema, SQLAlchemyAutoSchema):
-    LINE_ITEM_UPDATABLE_FIELDS = ["max_impressions", "rpm", "campaign_start", "campaign_end", "ad_units"]
+    LINE_ITEM_UPDATABLE_FIELDS = ["max_impressions", "rpm", "campaign_start", "campaign_end", "ad_unit_ids"]
 
     @pre_load()
     def convert_datetime(self,data, **kwargs):
