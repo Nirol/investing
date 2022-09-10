@@ -1,0 +1,25 @@
+version: '3.5'
+services:
+  app:
+    build: ./app
+    command: python manage.py run -h 0.0.0.0
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:5000
+    env_file:
+      - ./.env
+  db:
+    container_name: postgres
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=investing_user
+      - POSTGRES_PASSWORD=investing123
+      - POSTGRES_DB=investing
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
