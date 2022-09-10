@@ -35,13 +35,21 @@ def create_ad_unit():
         abort(400,"no request body")
     ad_unit_schema = AdUnitSchema()
     try:
-        ad_unit = ad_unit_schema.load(request.json)
+        ad_unit_dict = ad_unit_schema.load(request.json)
     except ValidationError as error:
         abort(400,error.messages)
 
-
+    ad_unit = AdUnit(
+        **ad_unit_dict
+    )
     db.session.add(ad_unit)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as error:
+        abort(400, error)
+
+
+
     return ad_unit_schema.dump(ad_unit), 201
 
 
