@@ -90,3 +90,37 @@ def patch_line_item(line_item_id):
         abort(400, error)
     return line_item_schema.dump(line_item)
 
+
+@line_item_bp.route('/line_item/<int:line_item_id>', methods=['PUT'])
+def put_line_item(line_item_id):
+    if not request.json:
+        abort(400)
+    line_item_schema = LineItemSchema()
+
+    try:
+        # as in POST request, the payload need to hold all required line item arguments.
+        line_item_schema.load(request.json)
+    except ValidationError as error:
+        abort(400,error.messages)
+
+
+    line_item = LineItem.query.get_or_404(line_item_id)
+
+    for key, value in request.json.items():
+        setattr(line_item, key, value)
+
+    # validate patched line item value:
+    try:
+        line_item_dict = line_item_schema.load(line_item.updatable_fields_json(updatable_fields=LineItemSchema.LINE_ITEM_UPDATABLE_FIELDS))
+    except ValidationError as error:
+        abort(400,error.messages)
+
+    if "ad_unit_ids" in request.json:
+        # if ad_unit_ids were updated, line_item_dict will hold the updated AdUnit objects
+        line_item.ad_units =  line_item_dict['ad_units']
+
+    # update the updated_at field:
+    line_item.updated_at = datetime.utcnow()
+
+    db.session.commit()
+    return line_item_schema.dump(line_item)
