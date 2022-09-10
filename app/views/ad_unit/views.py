@@ -6,7 +6,7 @@ from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 
 from app.extensions import db
-from app.models.ad_unit.ad_unit import AdUnit, AdUnitSchema
+from app.models import AdUnit, AdUnitSchema
 
 ad_units_bp = Blueprint('ad_units', __name__)
 

@@ -7,9 +7,6 @@ from flask import Flask
 from app.extensions import db, migrate
 
 # import all models so flask db migration will recognize the models.
-from app.models.ad_unit.ad_unit import AdUnit
-from app.models.creative.creative import Creative
-from app.models.line_item.line_item import LineItem
 
 def create_app(config_object="app.settings"):
     """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
@@ -32,11 +29,14 @@ def register_extensions(app):
 
 def register_blueprints(app):
     """Register Flask blueprints."""
-    from app.ad_unit.views import ad_units_bp
+    from app.views import ad_units_bp
     app.register_blueprint(ad_units_bp)
 
-    from app.line_item.views import line_item_bp
+    from app.views import line_item_bp
     app.register_blueprint(line_item_bp)
+
+    from app.views import creative_bp
+    app.register_blueprint(creative_bp)
 
     return None
 

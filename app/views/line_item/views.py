@@ -6,7 +6,7 @@ from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 
 from app.extensions import db
-from app.models.line_item.line_item import LineItem, LineItemSchema
+from app.models import LineItem, LineItemSchema
 
 line_item_bp = Blueprint('line_item', __name__)
 
