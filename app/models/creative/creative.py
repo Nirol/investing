@@ -29,7 +29,7 @@ class Creative(BaseModel):
 class CreativeSchema(BaseSchema, SQLAlchemyAutoSchema):
 
 
-    CREATIVE_UPDATABLE_FIELDS = ["content", "width", "height", "campaign_end", "line_item_id"]
+    CREATIVE_UPDATABLE_FIELDS = ["creative_type","content", "width", "height", "campaign_end", "line_item_id"]
 
 
     @post_load()
@@ -52,9 +52,8 @@ class CreativeSchema(BaseSchema, SQLAlchemyAutoSchema):
         return data
 
 
-    line_item_id = fields.Integer( load_only=True)
-    from app.models.line_item.line_item import LineItemSchema
-    line_item = fields.Nested(LineItemSchema, dump_only=True)
+    line_item_id = fields.Integer()
+
 
     class Meta:
         model = Creative
