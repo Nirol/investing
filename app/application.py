@@ -8,6 +8,8 @@ from app.extensions import db, migrate
 
 # import all models so flask db migration will recognize the models.
 
+
+
 def create_app(config_object="app.settings"):
     """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
     :param config_object: The configuration object to use.
@@ -37,6 +39,9 @@ def register_blueprints(app):
 
     from app.views import creative_bp
     app.register_blueprint(creative_bp)
+
+    from app.views import fetch_bp
+    app.register_blueprint(fetch_bp)
 
     return None
 
