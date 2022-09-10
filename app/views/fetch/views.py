@@ -12,7 +12,7 @@ fetch_bp = Blueprint('fetch', __name__)
 def fetch_line_items():
     FILTER_BY_FIELDS = ["country", "device", "browser", "language", "os"]
     filters = []
-
+    # TODO: add validation for request arguments values
     if len(request.args) > 0:
         # dynamically create filters:
         for key,value in request.args.items():
