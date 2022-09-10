@@ -33,25 +33,23 @@ def delete_ad_unit(ad_unit_id):
 def create_ad_unit():
     if not request.json:
         abort(400,"no request body")
-
+    ad_unit_schema = AdUnitSchema()
     try:
-        AdUnitSchema().load(request.json)
+        ad_unit = ad_unit_schema.load(request.json)
     except ValidationError as error:
         abort(400,error.messages)
 
-    ad_unit = AdUnit(
-        **request.json
-    )
+
     db.session.add(ad_unit)
     db.session.commit()
-    return AdUnitSchema().dump(ad_unit), 201
+    return ad_unit_schema.dump(ad_unit), 201
 
 
 @ad_units_bp.route('/ad_unit/<int:ad_unit_id>', methods=['PATCH'])
 def patch_ad_unit(ad_unit_id):
     if not request.json:
         abort(400)
-
+    ad_unit_schema = AdUnitSchema()
 
     if not AdUnitSchema.is_patch_fields_valid(request.json):
         abort(400,f"Only the fields {AdUnitSchema.UPDATABLE_FIELDS} are updatable")
@@ -63,7 +61,7 @@ def patch_ad_unit(ad_unit_id):
 
     # validate patched ad unit value:
     try:
-        AdUnitSchema().load(ad_unit.updatable_fields_json())
+        ad_unit_schema.load(ad_unit.updatable_fields_json())
     except ValidationError as error:
         abort(400,error.messages)
 
@@ -71,17 +69,17 @@ def patch_ad_unit(ad_unit_id):
     ad_unit.updated_at = datetime.utcnow()
 
     db.session.commit()
-    return AdUnitSchema().dump(ad_unit)
+    return ad_unit_schema.dump(ad_unit)
 
 @ad_units_bp.route('/ad_unit/<int:ad_unit_id>', methods=['PUT'])
 def put_ad_unit(ad_unit_id):
     if not request.json:
         abort(400)
-
+    ad_unit_schema = AdUnitSchema()
 
     try:
         # as in POST request, the payload need to hold all required ad unit arguments.
-        AdUnitSchema().load(request.json)
+        ad_unit_schema.load(request.json)
     except ValidationError as error:
         abort(400,error.messages)
 
@@ -93,7 +91,7 @@ def put_ad_unit(ad_unit_id):
 
     # validate patched ad unit value:
     try:
-        AdUnitSchema().load(ad_unit.updatable_fields_json())
+        ad_unit_schema.load(ad_unit.updatable_fields_json())
     except ValidationError as error:
         abort(400,error.messages)
 
@@ -101,4 +99,4 @@ def put_ad_unit(ad_unit_id):
     ad_unit.updated_at = datetime.utcnow()
 
     db.session.commit()
-    return AdUnitSchema().dump(ad_unit)
+    return ad_unit_schema.dump(ad_unit)
