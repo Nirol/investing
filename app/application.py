@@ -34,6 +34,10 @@ def register_blueprints(app):
     """Register Flask blueprints."""
     from app.ad_unit.views import ad_units_bp
     app.register_blueprint(ad_units_bp)
+
+    from app.line_item.views import line_item_bp
+    app.register_blueprint(line_item_bp)
+
     return None
 
 
