@@ -1,16 +1,17 @@
-"""The app module, containing the app factory function."""
+"""The investing_flask module, containing the investing_flask factory function."""
 import logging
 import sys
 from flask import Flask
 
 
-from app.extensions import db, migrate
 
 # import all models so flask db migration will recognize the models.
+from app.extensions import db
+
+from app.extensions import migrate
 
 
-
-def create_app(config_object="app.settings"):
+def create_app(config_object="settings"):
     """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
     :param config_object: The configuration object to use.
     """

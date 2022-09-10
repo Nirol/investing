@@ -12,8 +12,7 @@ from app.models.base_model import BaseModel
 from app.models.base_schema import BaseSchema
 
 # import is required
-from app.models.creative.creative import Creative #noqa
-
+from app.models.creative.creative import Creative
 
 ad_unit_line_item = db.Table('ad_unit_line_item',
                     db.Column('line_item_id', db.Integer, db.ForeignKey('line_item.id'), primary_key=True),

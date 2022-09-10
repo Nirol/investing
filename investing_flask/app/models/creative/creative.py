@@ -12,7 +12,7 @@ from app.models.creative.enums import CreativeType
 class Creative(BaseModel):
     __tablename__ = 'creative'
 
-    creative_type = db.Column(db.Enum(CreativeType), nullable=False, create_type=False)
+    creative_type = db.Column(db.Enum(CreativeType), nullable=False)
     # either url link or html code text.
     content = db.Column(db.Text, nullable=False)
 

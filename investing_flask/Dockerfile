@@ -15,6 +15,9 @@ COPY ./requirements.txt /usr/src/app/requirements.txt
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-
 # copy project
 COPY . /usr/src/app/
+
+
+ENV FLASK_APP /usr/src/app/investing_flask/manage.py
+

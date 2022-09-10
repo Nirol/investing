@@ -1,10 +1,10 @@
 version: '3.5'
 services:
   app:
-    build: ./app
+    build: investing_flask
     command: python manage.py run -h 0.0.0.0
     volumes:
-      - ./app/:/usr/src/app/
+      - ./investing_flask/:/usr/src/investing_flask/
     ports:
       - 8000:5000
     env_file:

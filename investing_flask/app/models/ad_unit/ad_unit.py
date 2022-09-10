@@ -1,6 +1,3 @@
-from datetime import datetime
-from typing import Dict
-
 from sqlalchemy import UniqueConstraint
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
