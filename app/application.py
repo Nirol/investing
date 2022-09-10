@@ -8,7 +8,8 @@ from app.extensions import db, migrate
 
 # import all models so flask db migration will recognize the models.
 from app.models.ad_unit.ad_unit import AdUnit
-
+from app.models.creative.creative import Creative
+from app.models.line_item.line_item import LineItem
 
 def create_app(config_object="app.settings"):
     """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
