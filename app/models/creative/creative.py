@@ -1,15 +1,10 @@
-from datetime import datetime
-
 from app.extensions import db
+from app.models.base_model import BaseModel
 from app.models.creative.enums import CreativeType
 
 
-class Creative(db.Model):
+class Creative(BaseModel):
     __tablename__ = 'creative'
-
-    id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.TIMESTAMP(timezone=True), default=datetime.utcnow)
-    updated_at = db.Column(db.TIMESTAMP(timezone=True), default=datetime.utcnow)
 
     creative_type = db.Column(db.Enum(CreativeType), nullable=False)
     # either url link or html code text.
@@ -21,3 +16,6 @@ class Creative(db.Model):
     line_item_id = db.Column(db.Integer, db.ForeignKey('line_item.id'),
         nullable=False)
 
+    def __init__(self, **kwargs):
+        # do custom initialization here
+        super(Creative, self).__init__( **kwargs)

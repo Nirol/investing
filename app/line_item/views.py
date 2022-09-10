@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import abort, jsonify, request
 from marshmallow import ValidationError
-
+from datetime import datetime
 
 from app.extensions import db
 from app.models.line_item.line_item import LineItem, LineItemSchema
@@ -47,4 +47,31 @@ def create_line_item():
     db.session.add(line_item)
     db.session.commit()
     return line_item_schema.dump(line_item), 201
+
+
+@line_item_bp.route('/line_item/<int:line_item_id>', methods=['PATCH'])
+def patch_line_item(line_item_id):
+    if not request.json:
+        abort(400)
+    line_item_schema = LineItemSchema()
+
+    if not LineItemSchema.is_patch_fields_valid(data=request.json, updateable_fields=LineItemSchema.LINE_ITEM_UPDATABLE_FIELDS):
+        abort(400,f"Only the fields {LineItemSchema.LINE_ITEM_UPDATABLE_FIELDS} are updatable")
+
+    line_item = LineItem.query.get_or_404(line_item_id)
+
+    for key, value in request.json.items():
+        setattr(line_item, key, value)
+
+    # validate patched line item value:
+    try:
+        line_item_schema.load(line_item.updatable_fields_json(updatable_fields=LineItemSchema.LINE_ITEM_UPDATABLE_FIELDS))
+    except ValidationError as error:
+        abort(400,error.messages)
+
+    # update the updated_at field:
+    line_item.updated_at = datetime.utcnow()
+
+    db.session.commit()
+    return line_item_schema.dump(line_item)
 

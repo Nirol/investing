@@ -1,14 +1,14 @@
-from datetime import datetime
-from typing import List, Dict
+from typing import List
 
 
-from marshmallow import ValidationError, fields, post_load
+from marshmallow import ValidationError, fields, post_load, pre_load
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 from app.extensions import db
 
 # many to many relationship table between line item and ad unit
 from app.models.ad_unit.ad_unit import AdUnit, AdUnitSchema
+from app.models.base_model import BaseModel
 from app.models.base_schema import BaseSchema
 
 ad_unit_line_item = db.Table('ad_unit_line_item',
@@ -16,12 +16,8 @@ ad_unit_line_item = db.Table('ad_unit_line_item',
                     db.Column('ad_unit_id', db.Integer, db.ForeignKey('ad_unit.id'), primary_key=True)
                     )
 
-class LineItem(db.Model):
+class LineItem(BaseModel):
     __tablename__ = 'line_item'
-
-    id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.TIMESTAMP(timezone=True), default=datetime.utcnow)
-    updated_at = db.Column(db.TIMESTAMP(timezone=True), default=datetime.utcnow)
 
 
     max_impressions = db.Column(db.Integer)
@@ -41,6 +37,30 @@ class LineItem(db.Model):
 class LineItemSchema(BaseSchema, SQLAlchemyAutoSchema):
     LINE_ITEM_UPDATABLE_FIELDS = ["max_impressions", "rpm", "campaign_start", "campaign_end", "ad_units"]
 
+    @pre_load()
+    def convert_datetime(self,data, **kwargs):
+        """
+        The Line Item schema expect the campaign start and end datetime object
+        as strings.
+        Loading existing objects for validation purposes require converting the
+        datetime objects into strings.
+        """
+        from datetime import datetime
+        def _convert_datetime_to_str(data,field_name,field_value):
+            if isinstance(field_value, datetime):
+                data[field_name] = str(field_value)
+
+
+
+        campaign_start = data.get("campaign_start",None)
+        _convert_datetime_to_str(data,field_name="campaign_start", field_value=campaign_start )
+
+        campaign_end = data.get("campaign_end", None)
+        _convert_datetime_to_str(data, field_name="campaign_end", field_value=campaign_end)
+
+        return data
+
+
     @post_load()
     def add_ad_units(self, data, **kwargs):
         """
@@ -57,6 +77,7 @@ class LineItemSchema(BaseSchema, SQLAlchemyAutoSchema):
                 existing_ids = [ad_unit.id for ad_unit in data["ad_units"]]
                 non_existing_ids = [ad_unit_id for ad_unit_id in ad_unit_ids if ad_unit_id not in existing_ids]
                 raise ValidationError(f"{non_existing_ids} ad unit ids does not exist!")
+
 
         return data
 

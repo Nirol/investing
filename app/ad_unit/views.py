@@ -71,7 +71,7 @@ def patch_ad_unit(ad_unit_id):
 
     # validate patched ad unit value:
     try:
-        ad_unit_schema.load(ad_unit.updatable_fields_json())
+        ad_unit_schema.load(ad_unit.updatable_fields_json(updatable_fields=AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS))
     except ValidationError as error:
         abort(400,error.messages)
 
@@ -101,7 +101,7 @@ def put_ad_unit(ad_unit_id):
 
     # validate patched ad unit value:
     try:
-        ad_unit_schema.load(ad_unit.updatable_fields_json())
+        ad_unit_schema.load(ad_unit.updatable_fields_json(updatable_fields=AdUnitSchema.AD_UNIT_UPDATABLE_FIELDS))
     except ValidationError as error:
         abort(400,error.messages)
 
