@@ -3,6 +3,8 @@ from flask import abort, jsonify, request
 from marshmallow import ValidationError
 from datetime import datetime
 
+from sqlalchemy.exc import IntegrityError
+
 from app.extensions import db
 from app.models.line_item.line_item import LineItem, LineItemSchema
 
@@ -25,7 +27,10 @@ def get_line_item(line_item_id):
 def delete_line_item(line_item_id):
     line_item = LineItem.query.get_or_404(line_item_id)
     db.session.delete(line_item)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as error:
+        abort(400, error)
     return jsonify({'result': True})
 
 
@@ -45,7 +50,10 @@ def create_line_item():
     )
 
     db.session.add(line_item)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as error:
+        abort(400, error)
     return line_item_schema.dump(line_item), 201
 
 
@@ -72,6 +80,9 @@ def patch_line_item(line_item_id):
     # update the updated_at field:
     line_item.updated_at = datetime.utcnow()
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as error:
+        abort(400, error)
     return line_item_schema.dump(line_item)
 

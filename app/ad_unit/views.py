@@ -78,7 +78,10 @@ def patch_ad_unit(ad_unit_id):
     # update the updated_at field:
     ad_unit.updated_at = datetime.utcnow()
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as error:
+        abort(400, error)
     return ad_unit_schema.dump(ad_unit)
 
 @ad_units_bp.route('/ad_unit/<int:ad_unit_id>', methods=['PUT'])
@@ -108,5 +111,8 @@ def put_ad_unit(ad_unit_id):
     # update the updated_at field:
     ad_unit.updated_at = datetime.utcnow()
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as error:
+        abort(400, error)
     return ad_unit_schema.dump(ad_unit)
