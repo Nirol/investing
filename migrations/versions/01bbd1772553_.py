@@ -39,7 +39,6 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=True),
     sa.Column('updated_at', sa.TIMESTAMP(timezone=True), nullable=True),
-    sa.Column('creative_type', sa.Enum('IMAGE', 'HTML5', 'NATIVE', name='creativetype'), nullable=False),
     sa.Column('content', sa.Text(), nullable=False),
     sa.Column('width', sa.Numeric(precision=6, scale=2), nullable=True),
     sa.Column('height', sa.Numeric(precision=6, scale=2), nullable=True),
@@ -47,6 +46,8 @@ def upgrade():
     sa.ForeignKeyConstraint(['line_item_id'], ['line_item.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+
+    op.add_column("creative", sa.Column("creative_type",sa.Enum('IMAGE', 'HTML5', 'NATIVE', name='creativetype'), nullable=True))
     # ### end Alembic commands ###
 
 
